@@ -7,7 +7,7 @@
 	CPU 386				; pusha offsets depends on a 386 or better
 					; FS and GS require a 386 or better
 
-	%DEFINE KOMETOS_VER '1.0.0'	; OS version number
+	%DEFINE KOMETOS_VER '1.1'	; OS version number
 	%DEFINE KOMETOS_API_VER 18	; API version for programs to check
 
 
@@ -207,7 +207,7 @@ option_screen:
 app_selector:
 	mov ax, os_init_msg		; Draw main screen layout
 	mov bx, os_version_msg
-	mov cx, 11101111b		; Colour: white text on light blue
+	mov cx, 00000000b		; Colour: white text on light blue
 	call os_draw_background
 
 	call os_file_selector		; Get user to select a file, and store
@@ -383,7 +383,6 @@ not_bas_extension:
 	%INCLUDE "features/sound.asm"
 	%INCLUDE "features/string.asm"
 	%INCLUDE "features/basic.asm"
-
 
 ; ==================================================================
 ; END OF KERNEL
