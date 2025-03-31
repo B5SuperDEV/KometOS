@@ -7,7 +7,7 @@
 	CPU 386				; pusha offsets depends on a 386 or better
 					; FS and GS require a 386 or better
 
-	%DEFINE KOMETOS_VER '1.1'	; OS version number
+	%DEFINE KOMETOS_VER '1.2'	; OS version number
 	%DEFINE KOMETOS_API_VER 18	; API version for programs to check
 
 
