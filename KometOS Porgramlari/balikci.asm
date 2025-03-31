@@ -5,14 +5,9 @@
 ;   Written by Jasper Ziller (jziller@maine.rr.com)
 ;   Version 1.0
 ;
-;   Try to Catch as many fish as possible before loosing all 10 hooks
+;   Olabildigince balik yakala 10 kancan var
 ;      
-;   The behavior of a fish can be altered by changing the behavior
-;   byte bit mask in the object array.  This value is anded with a
-;   one byte counter which is incremented each time through the game
-;   loop.  If the result is 0, the fish does not move that cycle.
-;
-;   The value of the fish is also set in the object array 
+;   
 ;
 ;=====================================================================
 
@@ -27,6 +22,8 @@
 
 %define lbcol 19        ;col        
 %define lbrow 4         ;row
+;   Baliklari ok lari ile yakayabilrsin!  
+;   Aman ipine balik deymesin XD
 
 ;--------------------------------
 
@@ -39,9 +36,7 @@
         bits 16
         %include "kometdev.inc" ;MikeOS Include file
         org 32768              ;MikeOS program area
-
 start:  call init               ;initialize game
-
         ;game loop
 
 loop:   call inp                ;check for keypress
@@ -522,8 +517,8 @@ fish:   db 02,13,00010100b,0xAF,0,0,0,1
         db 02,21,01000000b,0xF0,0,0,0,81       
         db 77,22,00010000b,0xE5,0,0,1,100       
 
-scmsg   db 'Total Score: ',0
-hkmsg   db 'Hooks Left:  ',0
+scmsg   db 'Skor: ',0
+hkmsg   db 'Kalan kanclar:  ',0
 
 gomsg   db 'Catch Log',0
 head1   db '       Market   Number',0
@@ -542,7 +537,7 @@ intro:  db 16,'Balik Yakalamaca',0
         db 1,0
         db 20,'Enter=Basla',0
 es      db 0
-credit: db 'Windows Film Yapan 1.03(Fusiki Games in oyununun tabanindandir!)',0
+credit: db 'Fusiki Games (Benimarafimdan türkceye cevirilmistir',0
 dtbuff: times 64 db 0
 seabed: db 0xDC,0xDC,0xDC,0xB0,0xB2,0xB0,0xB0,0xB2,0xB0,0
 

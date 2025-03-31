@@ -3,8 +3,8 @@
 ; ------------------------------------------------------------------
 
 
-	BITS 16
-	%INCLUDE "kometdev.inc"
+	BITS 32
+ 	%INCLUDE "kometdev.inc"
 	ORG 32768
         
 
@@ -16,7 +16,7 @@
 
 
 start:
-	call .draw_background
+        call .draw_background
 
 	mov ax, .command_list			; Draw list of disk operations
 	mov bx, .help_msg1
@@ -32,13 +32,11 @@ start:
 	je near .rename_file
 
 	cmp ax, 3
-	je near .copy_file
+	je near .make_file
 
 	cmp ax, 4
 	je near .file_size
 
-	cmp ax, 5
-	je near .disk_info
 
 
 
@@ -113,6 +111,16 @@ start:
 .rename_fail:
 	mov ax, .err_file_exists
 	mov bx, 0
+
+	mov cx, bx				; Otherwise write out the copy
+	mov bx, 36864
+	mov ax, .filename_tmp2
+	call os_write_file
+
+	jc near .writing_error
+
+	jmp start
+
 	mov cx, 0
 	mov dx, 0
 	call os_dialog_box
@@ -123,16 +131,7 @@ start:
 	jmp start
 
 
-.copy_file:
-	call .draw_background
-
-	call os_file_selector			; Get filename from user
-	jc .no_copy_file_selected
-
-	mov si, ax				; And store it
-	mov di, .filename_tmp1
-	call os_string_copy
-
+.make_file:
 	call .draw_background
 
 	mov bx, .filename_msg			; Get second filename
@@ -151,16 +150,6 @@ start:
 
 	cmp bx, 28672				; Is file to copy bigger than 28K?
 	jg .copy_file_too_big
-
-	mov cx, bx				; Otherwise write out the copy
-	mov bx, 36864
-	mov ax, .filename_tmp2
-	call os_write_file
-
-	jc near .writing_error
-
-	jmp start
-
 .no_copy_file_selected:
 	jmp start
 
@@ -195,54 +184,8 @@ start:
 	jmp start
 
 
-.disk_info:
-	mov cx, 1				; Load first disk sector into RAM
-	mov dx, 0
-	mov bx, disk_buffer
-
-	mov ah, 2
-	mov al, 1
-	stc
-	int 13h					; BIOS load sector call
-
-	mov si, disk_buffer + 2Bh		; Disk label starts here
-
-	mov di, .tmp_string1
-	mov cx, 11				; Copy 11 chars of it
-	rep movsb
-
-	mov byte [di], 0			; Zero-terminate it
-
-	mov si, disk_buffer + 36h		; Filesystem string starts here
-
-	mov di, .tmp_string2
-	mov cx, 8				; Copy 8 chars of it
-	rep movsb
-
-	mov byte [di], 0			; Zero-terminate it
-
-	mov ax, .label_string_text		; Add results to info strings
-	mov bx, .tmp_string1
-	mov cx, .label_string_full
-	call os_string_join
-
-	mov ax, .fstype_string_text
-	mov bx, .tmp_string2
-	mov cx, .fstype_string_full
-	call os_string_join
-
-	call .draw_background
-
-	mov ax, .label_string_full		; Show the info
-	mov bx, .fstype_string_full
-	mov cx, 0
-	mov dx, 0
-	call os_dialog_box
-
-	jmp start
-
-.exit:
-	call os_clear_screen
+.exit:  
+        call os_clear_screen
 	ret
 
 .writing_error:
@@ -269,35 +212,34 @@ start:
 	ret
 
 
-	.command_list		db 'Dosya sil,Dosya Adlandir,Dosya Kopyala,Dosya Olc,Disk Bilgisi', 0
+	.command_list		db 'Dosya sil,Dosya Adlandir,Dosya Olustur,Dosya Olc,', 0
 
-	.help_msg1		db 'Select a file operation to perform,', 0
-	.help_msg2		db 'or press the Esc key to exit...', 0
+	.help_msg1		db 'Dosya veya operasyon sec,', 0
+	.help_msg2		db 'yada ESC ile cik...', 0
 
 	.title_msg		db 'KometOS Dosya Yöneticisi', 0
-	.footer_msg		db 'Copy, rename and delete files', 0
+	.footer_msg		db 'Dosyalar ile herhangi bir isletme yap', 0
 
-	.label_string_text	db 'Filesystem label: ', 0
+	.label_string_text	db 'Dosya Sistemi Levhasi: ', 0
 	.label_string_full	times 30 db 0
 
-	.fstype_string_text	db 'Filesystem type: ', 0
+	.fstype_string_text	db 'Dosya Sitemi tipi: ', 0
 	.fstype_string_full	times 30 db 0
 
 	.delete_confirm_msg	db 'Eminmisin???', 0
 
-	.filename_msg		db 'Enter filename with extension (eg FOO.BAR):', 0
+	.filename_msg		db 'Ekletisi olan dosya ekle (örnek.bat):', 0
 	.filename_input		times 255 db 0
 	.filename_tmp1		times 15 db 0
 	.filename_tmp2		times 15 db 0
 
-	.size_msg		db 'File size (in bytes):', 0
+	.size_msg		db 'Dosya boyutu ( bytes):', 0
 
-	.error_msg		db 'Error writing to the disk!', 0
-	.error_msg2		db 'Read-only media, or file exists!', 0
-	.err_too_large_msg	db 'File too large (max 24K)!', 0
-	.err_file_exists	db 'File of that name exists!', 0
+	.error_msg		db 'Diske yazarken hata olustu!', 0
+	.error_msg2		db 'Salt okur medya yada dosya!', 0
+	.err_too_large_msg	db 'Cok büyük dosya (max 24K)!', 0
+	.err_file_exists	db 'Böyle bir dosya zaten var!', 0
 
 	.tmp_string1		times 15 db 0
 	.tmp_string2		times 15 db 0
-
 ; ------------------------------------------------------------------
