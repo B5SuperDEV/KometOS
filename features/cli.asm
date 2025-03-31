@@ -69,7 +69,7 @@ get_cmd:				; Main processing loop
 
 	mov di, dir_string		; 'DIR' entered?
 	call os_string_compare
-	jc near list_directory
+	jc near list_directory    
 
 	mov di, ver_string		; 'VER' entered?
 	call os_string_compare
@@ -554,8 +554,8 @@ ren_file:
 	jmp get_cmd
 
 
-	.success_msg	db 'File renamed successfully', 13, 10, 0
-	.failure_msg	db 'Operation failed - file not found or invalid filename', 13, 10, 0
+	.success_msg	db '', 13, 10, 0
+	.failure_msg	db 'Basarisiz - dosya bulunamadi yada uygunsuz isim!', 13, 10, 0
 
 
 ; =====================================================================
@@ -954,11 +954,11 @@ exit:
 
 	prompt			db '> ', 0
 
-	help_text		db 'Commands: DIR, LS, COPY, REN, DEL, CAT, SIZE, CLS, HELP, TIME, DATE, VER, EXIT', 13, 10, 0
+	help_text		db 'Komutlar: DIR, LS, COPY, REN, DEL, CAT, SIZE, CLS, HELP, TIME, DATE, VER, EXIT', 13, 10, 0
 	invalid_msg		db 'Öyle bir program yok!', 13, 10, 0
-	nofilename_msg		db 'No filename or not enough filenames', 13, 10, 0
+	nofilename_msg		db 'Dosya ismi yok!', 13, 10, 0
 	notfound_msg		db 'Dosya bulunamadi!', 13, 10, 0
-	writefail_msg		db 'Dosya yazdirilamadi yeniden yazmayi dene?', 13, 10, 0
+	writefail_msg		db 'Dosya yazdirilamadi yeniden denemeye ne dersin?', 13, 10, 0
 	exists_msg		db 'Dosya zaten var!', 13, 10, 0
 	finished_msg		db '>>> Program bitti devam icin basin!', 0
 
